@@ -90,6 +90,7 @@ if (isset($_SESSION["usu_id"]) and count($datos) > 0) {
         </div>
 
         <?php require_once("mnt.php") ?>
+        <?php require_once("mnt_editar.php") ?>
 
         <?php require_once("../html/sidebar.php") ?>
 

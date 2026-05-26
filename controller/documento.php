@@ -80,7 +80,10 @@
                 }else if($row["doc_estado"]=='Terminado'){
                     $sub_array[]= "<span class='badge bg-primary'>Terminado</span>";
                 }
-                $sub_array[]= '<button type="button" class="btn btn-soft-primary waves-effect waves-light btn-sm" onClick="ver('.$row["doc_id"].')"><i class=" bx bx-message-alt-dots font-size-16 align-middle"></i></button>';
+                $sub_array[]= '<div class="d-flex gap-1">'.
+                    '<button type="button" class="btn btn-soft-primary waves-effect waves-light btn-sm" onClick="ver('.$row["doc_id"].')" title="Ver detalle"><i class="bx bx-message-alt-dots font-size-16 align-middle"></i></button>'.
+                    '<button type="button" class="btn btn-soft-warning waves-effect waves-light btn-sm" onClick="editar('.$row["doc_id"].')" title="Editar"><i class="bx bx-edit-alt font-size-16 align-middle"></i></button>'.
+                    '</div>';
                 $data[]=$sub_array;
             }
 
@@ -208,6 +211,36 @@
             echo $mes."-".$anio."-".$_POST["doc_id"];
             break;
 
+        case "actualizar":
+            $filas = $documento->actualizar_documento(
+                $_POST["doc_id"],
+                $_POST["area_id"],
+                $_POST["tra_id"],
+                $_POST["doc_externo"],
+                $_POST["tip_id"],
+                $_POST["tip_doc"],
+                $_POST["doc_dni"],
+                $_POST["doc_nom"],
+                $_POST["doc_descrip"]
+            );
+
+            if (!empty($_FILES['file']['name'][0])) {
+                $countfiles = count($_FILES['file']['name']);
+                $ruta = "../assets/document/".$_POST["doc_id"]."/";
+                if (!file_exists($ruta)) {
+                    mkdir($ruta, 0777, true);
+                }
+                for ($index = 0; $index < $countfiles; $index++) {
+                    $nombre   = $_FILES['file']['tmp_name'][$index];
+                    $destino  = $ruta.$_FILES['file']['name'][$index];
+                    $documento->insert_documento_detalle($_POST["doc_id"], $_FILES['file']['name'][$index], $_SESSION["usu_id"], 'Pendiente');
+                    move_uploaded_file($nombre, $destino);
+                }
+            }
+
+            echo $filas > 0 ? "1" : "0";
+            break;
+
         case "listarxusuterminado":
             $datos=$documento->get_documento_x_usu_terminado($_SESSION["usu_id"]);
             $data = Array();
@@ -226,7 +259,10 @@
                 }else if($row["doc_estado"]=='Terminado'){
                     $sub_array[]= "<span class='badge bg-primary'>Terminado</span>";
                 }
-                $sub_array[]= '<button type="button" class="btn btn-soft-primary waves-effect waves-light btn-sm" onClick="ver('.$row["doc_id"].')"><i class=" bx bx-message-alt-dots font-size-16 align-middle"></i></button>';
+                $sub_array[]= '<div class="d-flex gap-1">'.
+                    '<button type="button" class="btn btn-soft-primary waves-effect waves-light btn-sm" onClick="ver('.$row["doc_id"].')" title="Ver detalle"><i class="bx bx-message-alt-dots font-size-16 align-middle"></i></button>'.
+                    '<button type="button" class="btn btn-soft-warning waves-effect waves-light btn-sm" onClick="editar('.$row["doc_id"].')" title="Editar"><i class="bx bx-edit-alt font-size-16 align-middle"></i></button>'.
+                    '</div>';
                 $data[]=$sub_array;
             }
 

@@ -72,6 +72,7 @@
         </div>
 
         <?php require_once("mnt.php")?>
+        <?php require_once("mnt_editar.php")?>
 
         <?php require_once("../html/sidebar.php")?>
 

@@ -182,6 +182,33 @@
             $sql->execute();
         }
 
+        public function actualizar_documento($doc_id,$area_id,$tra_id,$doc_externo,$tip_id,$tip_doc,$doc_dni,$doc_nom,$doc_descrip){
+            $conectar = parent::conexion();
+            parent::set_names();
+            $sql="UPDATE tm_documento SET
+                    area_id=?,
+                    tra_id=?,
+                    doc_externo=?,
+                    tip_id=?,
+                    tip_doc=?,
+                    doc_dni=?,
+                    doc_nom=?,
+                    doc_descrip=?
+                WHERE doc_id=?";
+            $sql=$conectar->prepare($sql);
+            $sql->bindValue(1,$area_id);
+            $sql->bindValue(2,$tra_id);
+            $sql->bindValue(3,$doc_externo);
+            $sql->bindValue(4,$tip_id);
+            $sql->bindValue(5,$tip_doc);
+            $sql->bindValue(6,$doc_dni);
+            $sql->bindValue(7,$doc_nom);
+            $sql->bindValue(8,$doc_descrip);
+            $sql->bindValue(9,$doc_id);
+            $sql->execute();
+            return $sql->rowCount();
+        }
+
         public function get_documento_x_usu_terminado($doc_usu_terminado){
             /* TODO: Obtener la conexión a la base de datos utilizando el método de la clase padre */
             $conectar = parent::conexion();
