@@ -1,0 +1,73 @@
+# ============================================================
+#  RegistroPQRS v1 — Apache Configuration
+#  Laragon / Apache 2.4+
+# ============================================================
+
+Options -Indexes -MultiViews
+RewriteEngine On
+
+# ----------------------------------------------------------
+# 1. BLOQUEO DE ARCHIVOS SENSIBLES
+#    Ningún cliente puede descargar .env, logs, SQL ni configs
+# ----------------------------------------------------------
+<FilesMatch "\.(env|log|sql|json|lock|md|sh|bat|gitignore|gitkeep)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Bloquear acceso a directorios internos
+<IfModule mod_rewrite.c>
+    RewriteRule ^(config|models|logs|docs|include)/  - [F,L]
+</IfModule>
+
+# ----------------------------------------------------------
+# 2. PÁGINAS DE ERROR PERSONALIZADAS
+#    Redirige todos los errores HTTP a view/Error/index.php
+#    Se pasa el código como query string para detección en PHP
+# ----------------------------------------------------------
+ErrorDocument 400 /RegistroPQRS/view/Error/index.php?code=400
+ErrorDocument 401 /RegistroPQRS/view/Error/index.php?code=401
+ErrorDocument 403 /RegistroPQRS/view/Error/index.php?code=403
+ErrorDocument 404 /RegistroPQRS/view/Error/index.php?code=404
+ErrorDocument 500 /RegistroPQRS/view/Error/index.php?code=500
+ErrorDocument 503 /RegistroPQRS/view/Error/index.php?code=503
+
+# ----------------------------------------------------------
+# 3. HEADERS DE SEGURIDAD HTTP
+# ----------------------------------------------------------
+<IfModule mod_headers.c>
+    # Evita que la página sea embebida en iframes externos
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Evita sniffing del tipo MIME
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Activa protección XSS en navegadores antiguos
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Controla información del referer enviada a terceros
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Deshabilita caché en páginas PHP autenticadas
+    <FilesMatch "\.php$">
+        Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header always set Pragma "no-cache"
+    </FilesMatch>
+
+    # Oculta la versión de PHP
+    Header always unset X-Powered-By
+    Header always unset Server
+</IfModule>
+
+# ----------------------------------------------------------
+# 4. COMPRESIÓN GZIP (opcional, mejora rendimiento)
+# ----------------------------------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript
+    AddOutputFilterByType DEFLATE application/javascript application/json
+</IfModule>
+
+# ----------------------------------------------------------
+# 5. CHARSET POR DEFECTO
+# ----------------------------------------------------------
+AddDefaultCharset UTF-8

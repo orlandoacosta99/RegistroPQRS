@@ -1,0 +1,5 @@
+include/
+.claude/
+logs/*.log
+.env
+assets/document/
