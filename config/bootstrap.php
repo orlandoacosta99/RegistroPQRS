@@ -39,7 +39,7 @@ if (file_exists($_envFile) && is_readable($_envFile)) {
         $value = isset($parts[1]) ? trim($parts[1]) : '';
 
         // Eliminar comillas simples o dobles envolventes del valor
-        // Ej: APP_NAME="Mesa de Partes" → Mesa de Partes
+        // Ej: APP_NAME="Registro de PQRS" → Registro de PQRS
         $len = strlen($value);
         if ($len >= 2) {
             $first = $value[0];
